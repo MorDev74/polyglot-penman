@@ -9,11 +9,14 @@ export default function Home() {
       {messages.map(m => (
         <div key={m.id} className="whitespace-pre-wrap">
           {m.role === "user" ? "User : ": "AI : "}
-          {m.content}
+          {m.toolInvocations 
+            ? ( <pre>{JSON.stringify(m.toolInvocations,null,2)}</pre>)
+            : (<div>{m.content}</div>)
+          }
         </div>
       ))}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={() => {}}>
         <input 
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}
