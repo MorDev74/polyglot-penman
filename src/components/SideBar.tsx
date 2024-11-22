@@ -1,11 +1,9 @@
-"use client"
-
-import { useContext } from "react";
+import Image from "next/image";
 import { ComboMenu } from "@/components/ComboMenu";
-import { DevContext } from "@/hooks/context";
 import { srcLangs,destLangs,writingStyles } from "@/utils/config";
-export function SideBar() {
-    const { devMessages } = useContext(DevContext);
+import {fetchApiUsageCount} from "@/_lib/db/data";
+export async function SideBar() {
+    const apiUsageCount = await fetchApiUsageCount()
     return (
 
         <div className="bg-gray-800 flex flex-col gap-2 p-2">
@@ -16,19 +14,21 @@ export function SideBar() {
             <ComboMenu name={"Writing Style"} storageKey={"writingStyle"} list={writingStyles}/>
 
             <div className="border-t"> API Count </div>
+            <div>{apiUsageCount}</div>
 
+            {/* TODO delete later */}
             <div className="border-t h-full">  
-                Dev
+                <div>Dev</div>
                 <div>{`NODE_ENV : ${process.env.NODE_ENV}`}</div>
-                <div className="flex flex-col gap-1 bg-black rounded-sm p-2 w-[300px] overflow-hidden">
-                    {devMessages.map((msg,index) => (
-                        <div 
-                            key={index}
-                            className="text-white border border-gray-800 rounded-md"
-                        >{msg}</div>
-                    ))}
-                </div>
             </div>
+
+            <a 
+                target="_blank" 
+                href={"https://github.com/MorDev74/polyglot-penman"}
+                rel="noopener noreferrer"
+            >
+                <Image src="/github-65.svg" width={48} height={48} alt="" />
+            </a>
         </div>
     );
 }

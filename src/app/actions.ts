@@ -23,19 +23,10 @@ export async function generate(system: string, userMessage:string) {
 
     let model = google("gemini-1.5-flash-latest");
 
-    const localDev = process.env.NODE_ENV === "development";
-    // const localDev = false;
-    if (localDev) {
-        try {
-            await prisma.apiCount.create({data:{hashAPIKey:hashedApiKey}});
-        } catch (error) {
-            console.log("local dev error: " + error);
-            stream.done();
-            return { message: "Create api count failed: " + error };
-        }
+    if (process.env.NODE_ENV === "development") {
         const ollamaClient = createOllama();
         model = ollamaClient("qwen2.5:1.5b");
-    } else {
+    } else if (process.env.NODE_ENV === "production") {
         const apiCountQyeryData = await prisma.apiCount.findUnique({where:{hashAPIKey:hashedApiKey}});
         if (apiCountQyeryData?.id === undefined) {
             try {
@@ -47,12 +38,22 @@ export async function generate(system: string, userMessage:string) {
         } else {
             try {
                 const apiCount = apiCountQyeryData.usageCount + 1;
-                await prisma.apiCount.update({where:{hashAPIKey:hashedApiKey},data:{usageCount:apiCount}});
+                if (apiCount > 100) {
+                    stream.done();
+                    return { message: "API limit exceeded" };
+                }
+                await prisma.apiCount.update({
+                    where:{hashAPIKey:hashedApiKey},
+                    data:{usageCount:apiCount}
+                });
             } catch (error) {
                 stream.done();
                 return { message: "Update api count failed: " + error };
             }
         }
+    } else {
+        stream.done();
+        return { message: "NODE_ENV not set"};
     }
 
     (async () => {
