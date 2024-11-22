@@ -3,6 +3,7 @@ import { useState } from "react";
 import { defaultPrompt, promptTooltip } from "@/utils/config";
 import { generate } from "@/app/actions";
 import { readStreamableValue } from "ai/rsc";
+import { useRouter } from "next/navigation";
 
 function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   :{srcLang:string, destLang:string, writingStyle:string, promptTemplate:string}) 
@@ -14,9 +15,11 @@ function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
 
   // TODO: validation {srcLang} {destLang}...
   // const errorMessage = "Make sure in your prompt you include the following: {source language}, {destination language}, {writing style}";
+
   return prompt;
 }
 
+// TODO: handle error
 interface ErrorProps {
   promptTemplate?: string;
   sourceLanguage?: string;
@@ -27,6 +30,7 @@ export default function Home() {
   const [generation, setGeneration] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({});
   const [pending, setPending] = useState(false);
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,6 +59,7 @@ export default function Home() {
       });
     }
 
+    router.refresh();
     setPending(false);
   }
 
@@ -91,7 +96,7 @@ export default function Home() {
 
         <button 
           type="submit"
-          className="bg-sky-800 text-white font-bold p-2 rounded-full hover:bg-sky-600"
+          className={`bg-sky-800 text-white font-bold p-2 rounded-full ${pending? "": "hover:bg-sky-600"}`}
           disabled={pending}
         >Generate</button>
 

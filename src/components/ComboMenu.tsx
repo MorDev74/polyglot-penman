@@ -28,7 +28,7 @@ export function ComboMenu({name,storageKey,list}
             <div>{name}</div>
 
             <select 
-                value={selectValue}
+                value={selectValue || ""}
                 onChange={onSelectChange}
                 className="rounded-md bg-slate-900 p-1"
             >

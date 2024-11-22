@@ -61,6 +61,7 @@ export async function generate(system: string, userMessage:string) {
             model:model,
             system:system,
             prompt: userMessage,
+            temperature:0,
         });
 
         for await (const chunk of textStream) {
