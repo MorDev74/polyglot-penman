@@ -11,6 +11,8 @@
   "dependencies": {
     "@ai-sdk/google": "^0.0.55",
     "@ai-sdk/openai": "^0.0.72",
+    "@prisma/client": "^5.22.0",
+    "@vercel/postgres": "^0.10.0",
     "ai": "^3.4.33",
     "next": "15.0.2",
     "ollama-ai-provider": "^0.16.1",
@@ -25,6 +27,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
     "postcss": "^8",
+    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
