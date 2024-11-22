@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import { SideBar } from "@/components/SideBar";
+import { DevContextProvider } from "@/hooks/context";
 
 export const metadata: Metadata = {
   title: "Polyglot Penman",
@@ -14,7 +16,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <DevContextProvider>
+
+        <div className="flex flex-row h-screen">
+          <SideBar />
+          {children}
+        </div>
+
+        </DevContextProvider>
       </body>
     </html>
   );
