@@ -30,6 +30,7 @@ function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
 interface ErrorProps {
   promptTemplate?: string;
   sourceLanguage?: string;
+  srcEssay?: string;
   generate?: string;
 }
 
@@ -55,6 +56,11 @@ export default function Home() {
       const { prompt, promptMessage } = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
       if (promptMessage) {
         setErrorMessage({ promptTemplate: promptMessage });
+        setPending(false);
+        return;
+      }
+      if (!srcEssay) {
+        setErrorMessage({ srcEssay: "Please enter an essay to translate." });
         setPending(false);
         return;
       }

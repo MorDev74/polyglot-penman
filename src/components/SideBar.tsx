@@ -56,8 +56,12 @@ export function SideBar() {
 
                     <hr className="border-gray-500"/>
 
-                    <div className="h-full my-2">
-                        <div className="font-bold">Introduction</div>
+                    <div className="flex flex-col gap-1 h-full my-1">
+                        <div className="font-bold">How To Use</div>
+                        <p>1. Select &quot;Source Language&quot;, &quot;Destination Language&quot;, &quot;Writing Style&quot;</p>
+                        <p>2. Write prompt template</p>
+                        <p>3. Write source language essay</p>
+                        <p>4. Click &quot;Generate&quot; button</p>
                     </div>
 
                     <hr className="border-gray-500"/>
