@@ -25,12 +25,12 @@ export function ComboMenu({name,storageKey,list}
 
     return (
         <div className="flex flex-col">
-            <div>{name}</div>
+            <div className="font-bold">{name}</div>
 
             <select 
                 value={selectValue || ""}
                 onChange={onSelectChange}
-                className="rounded-md bg-slate-900 p-1"
+                className="rounded-md bg-slate-900 p-2"
             >
                 {list.map((item,index) => (
                     <option
