@@ -18,7 +18,7 @@ async function genSHA256Hash(input:string) {
 const llmApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY?? "";
 const hashedApiKey = await genSHA256Hash(llmApiKey);
 
-export async function generate(system: string, userMessage:string) {
+export async function generate(system: string, userMessage:string, temperature:number) {
     const stream = createStreamableValue("");
 
     let model = google("gemini-1.5-flash-latest");
@@ -61,6 +61,7 @@ export async function generate(system: string, userMessage:string) {
             model:model,
             system:system,
             prompt: userMessage,
+            temperature:temperature,
         });
 
         for await (const chunk of textStream) {

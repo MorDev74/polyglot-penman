@@ -3,6 +3,7 @@ import { useState } from "react";
 import { defaultPrompt, promptTooltip } from "@/utils/config";
 import { generate } from "@/app/actions";
 import { readStreamableValue } from "ai/rsc";
+import { useRouter } from "next/navigation";
 
 function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   :{srcLang:string, destLang:string, writingStyle:string, promptTemplate:string}) 
@@ -10,16 +11,26 @@ function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   const prompt:string = promptTemplate
     .replace(/{source language}/g, srcLang)
     .replace(/{destination language}/g, destLang)
-    .replace(/{writing style}/g, writingStyle)
+    .replace(/{}/g, writingStyle)
 
-  // TODO: validation {srcLang} {destLang}...
-  // const errorMessage = "Make sure in your prompt you include the following: {source language}, {destination language}, {writing style}";
-  return prompt;
+  let promptMessage = "";
+  if (srcLang === destLang) {
+    promptMessage = "Source and destination languages cannot be the same.";
+  } else if (
+    !/{source language}/.test(promptTemplate)
+    || !/{destination language}/.test(promptTemplate)
+    || !/{writing style}/.test(promptTemplate)
+  ) {
+    promptMessage = "Make sure to include the following in your prompt: {source language}, {destination language}, {writing style}, {essay}.";
+  }
+  return { prompt,promptMessage };
 }
 
+// TODO: handle error
 interface ErrorProps {
   promptTemplate?: string;
   sourceLanguage?: string;
+  srcEssay?: string;
   generate?: string;
 }
 
@@ -27,6 +38,7 @@ export default function Home() {
   const [generation, setGeneration] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({});
   const [pending, setPending] = useState(false);
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,23 +52,38 @@ export default function Home() {
       const writingStyle = localStorage.getItem("writingStyle") as string;
       const promptTemplate = formData.get("promptTemplate") as string;
       const srcEssay = formData.get("src-essay") as string;
+      const temperature = parseInt(formData.get("temperature") as string ?? "0");
 
-      const prompt = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
-      const { output } = await generate(prompt,srcEssay);
+      const { prompt, promptMessage } = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
+      if (promptMessage) {
+        setErrorMessage({ promptTemplate: promptMessage });
+        setPending(false);
+        return;
+      }
+      if (!srcEssay) {
+        setErrorMessage({ srcEssay: "Please enter an essay to translate." });
+        setPending(false);
+        return;
+      }
+
+      const { output,message } = await generate(prompt,srcEssay,temperature);
       if (output) {
         for await (const chunk of readStreamableValue(output)) {
           setGeneration(`${chunk}`);
         }
       }
+      if (message) {
+        setErrorMessage({ generate: message });
+      }
+
     } catch(error) {
       void error;
-      setErrorMessage({
-        generate: "Error generating content. Please try again later."
-      });
+      setErrorMessage({ generate: "Error generating content. Please try again later." });
     }
 
+    router.refresh();
     setPending(false);
-  }
+  } // end onSubmit
 
   const labelStyle = "rounded-md py-1 px-3 text-white bg-black w-1/3"
   const textareaStyle = "rounded-md flex-1 p-2 resize-none";
@@ -77,7 +104,7 @@ export default function Home() {
             placeholder="Enter your prompt here"
             className={textareaStyle}
           />
-          {errorMessage?.promptTemplate && <p className="text-red-500">{errorMessage?.promptTemplate}</p>}
+          {errorMessage?.promptTemplate && <p className="text-lg text-red-500">{errorMessage?.promptTemplate}</p>}
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -87,11 +114,12 @@ export default function Home() {
             placeholder="Enter your source essay here"
             className={textareaStyle}
           />
+          {errorMessage?.sourceLanguage && <div className="text-lg text-red-600">{errorMessage?.sourceLanguage}</div>}
         </div>
 
         <button 
           type="submit"
-          className="bg-sky-800 text-white font-bold p-2 rounded-full hover:bg-sky-600"
+          className={`bg-sky-800 text-white font-bold p-2 rounded-full ${pending? "": "hover:bg-sky-600"}`}
           disabled={pending}
         >Generate</button>
 
@@ -104,6 +132,7 @@ export default function Home() {
             className={textareaStyle}
             readOnly
           />
+          {errorMessage?.generate && <div className="text-lg text-red-600">{errorMessage?.generate}</div>}
         </div>
       </form>
 

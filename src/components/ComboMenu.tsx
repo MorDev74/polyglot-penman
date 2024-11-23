@@ -7,15 +7,14 @@ export function ComboMenu({name,storageKey,list}
     const [selectValue, setSelectValue] = useState("");
 
     useEffect(() => {
-        try {
-            const storageValue = localStorage.getItem(storageKey) as string;
+        const storageValue = localStorage.getItem(storageKey) as string;
+        if (storageValue !== null) {
             setSelectValue(storageValue);
-        } catch(error) {
-            void error;
+        } else {
             setSelectValue(list[0]);
             localStorage.setItem(storageKey,list[0]);
         }
-    },[list,storageKey]);
+    },[])
 
     function onSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
         e.preventDefault();
@@ -25,12 +24,12 @@ export function ComboMenu({name,storageKey,list}
 
     return (
         <div className="flex flex-col">
-            <div>{name}</div>
+            <div className="font-bold">{name}</div>
 
             <select 
-                value={selectValue}
+                value={selectValue || ""}
                 onChange={onSelectChange}
-                className="rounded-md bg-slate-900 p-1"
+                className="rounded-md bg-slate-900 p-2"
             >
                 {list.map((item,index) => (
                     <option
