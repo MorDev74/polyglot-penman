@@ -7,15 +7,14 @@ export function ComboMenu({name,storageKey,list}
     const [selectValue, setSelectValue] = useState("");
 
     useEffect(() => {
-        try {
-            const storageValue = localStorage.getItem(storageKey) as string;
+        const storageValue = localStorage.getItem(storageKey) as string;
+        if (storageValue !== null) {
             setSelectValue(storageValue);
-        } catch(error) {
-            void error;
+        } else {
             setSelectValue(list[0]);
             localStorage.setItem(storageKey,list[0]);
         }
-    },[list,storageKey]);
+    },[])
 
     function onSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
         e.preventDefault();

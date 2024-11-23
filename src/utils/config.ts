@@ -49,4 +49,4 @@ essay:
 // Additionally, please provide feedback on any areas where my essay could be improved. 
 // essay: {essay}`;
 
-export const promptTooltip = "Make sure in your prompt you include the following: {source language}, {destination language}, {writing style}, {essay}";
+export const promptTooltip = "Make sure to include the following in your prompt: {source language}, {destination language}, {writing style}, {essay}."

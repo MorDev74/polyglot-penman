@@ -11,12 +11,19 @@ function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   const prompt:string = promptTemplate
     .replace(/{source language}/g, srcLang)
     .replace(/{destination language}/g, destLang)
-    .replace(/{writing style}/g, writingStyle)
+    .replace(/{}/g, writingStyle)
 
-  // TODO: validation {srcLang} {destLang}...
-  // const errorMessage = "Make sure in your prompt you include the following: {source language}, {destination language}, {writing style}";
-
-  return prompt;
+  let promptMessage = "";
+  if (srcLang === destLang) {
+    promptMessage = "Source and destination languages cannot be the same.";
+  } else if (
+    !/{source language}/.test(promptTemplate)
+    || !/{destination language}/.test(promptTemplate)
+    || !/{writing style}/.test(promptTemplate)
+  ) {
+    promptMessage = "Make sure to include the following in your prompt: {source language}, {destination language}, {writing style}, {essay}.";
+  }
+  return { prompt,promptMessage };
 }
 
 // TODO: handle error
@@ -45,23 +52,31 @@ export default function Home() {
       const promptTemplate = formData.get("promptTemplate") as string;
       const srcEssay = formData.get("src-essay") as string;
 
-      const prompt = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
-      const { output } = await generate(prompt,srcEssay);
+      const { prompt, promptMessage } = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
+      if (promptMessage) {
+        setErrorMessage({ promptTemplate: promptMessage });
+        setPending(false);
+        return;
+      }
+
+      const { output,message } = await generate(prompt,srcEssay);
       if (output) {
         for await (const chunk of readStreamableValue(output)) {
           setGeneration(`${chunk}`);
         }
       }
+      if (message) {
+        setErrorMessage({ generate: message });
+      }
+
     } catch(error) {
       void error;
-      setErrorMessage({
-        generate: "Error generating content. Please try again later."
-      });
+      setErrorMessage({ generate: "Error generating content. Please try again later." });
     }
 
     router.refresh();
     setPending(false);
-  }
+  } // end onSubmit
 
   const labelStyle = "rounded-md py-1 px-3 text-white bg-black w-1/3"
   const textareaStyle = "rounded-md flex-1 p-2 resize-none";
@@ -82,7 +97,7 @@ export default function Home() {
             placeholder="Enter your prompt here"
             className={textareaStyle}
           />
-          {errorMessage?.promptTemplate && <p className="text-red-500">{errorMessage?.promptTemplate}</p>}
+          {errorMessage?.promptTemplate && <p className="text-lg text-red-500">{errorMessage?.promptTemplate}</p>}
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -92,6 +107,7 @@ export default function Home() {
             placeholder="Enter your source essay here"
             className={textareaStyle}
           />
+          {errorMessage?.sourceLanguage && <div className="text-lg text-red-600">{errorMessage?.sourceLanguage}</div>}
         </div>
 
         <button 
@@ -109,6 +125,7 @@ export default function Home() {
             className={textareaStyle}
             readOnly
           />
+          {errorMessage?.generate && <div className="text-lg text-red-600">{errorMessage?.generate}</div>}
         </div>
       </form>
 
