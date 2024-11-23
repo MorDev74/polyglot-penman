@@ -52,6 +52,7 @@ export default function Home() {
       const writingStyle = localStorage.getItem("writingStyle") as string;
       const promptTemplate = formData.get("promptTemplate") as string;
       const srcEssay = formData.get("src-essay") as string;
+      const temperature = parseInt(formData.get("temperature") as string ?? "0");
 
       const { prompt, promptMessage } = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
       if (promptMessage) {
@@ -65,7 +66,7 @@ export default function Home() {
         return;
       }
 
-      const { output,message } = await generate(prompt,srcEssay);
+      const { output,message } = await generate(prompt,srcEssay,temperature);
       if (output) {
         for await (const chunk of readStreamableValue(output)) {
           setGeneration(`${chunk}`);

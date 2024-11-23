@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ComboMenu } from "@/components/ComboMenu";
 import { srcLangs,destLangs,writingStyles } from "@/utils/config";
 import { FiSidebar } from "react-icons/fi";
+import { RangeSlider } from "./RangeSlider";
 export function SideBar() {
     const [apiUsageCount,setApiUsageCount] = useState(-1);
     const [collapse, setCollapse] = useState(false);
@@ -39,6 +40,13 @@ export function SideBar() {
                     <ComboMenu name={"Source Language"} storageKey={"srcLang"} list={srcLangs}/>
                     <ComboMenu name={"Destination Language"} storageKey={"destLang"} list={destLangs}/>
                     <ComboMenu name={"Writing Style"} storageKey={"writingStyle"} list={writingStyles}/>
+                    <RangeSlider 
+                        storageKey={"temperature"}
+                        initValue={"0.5"} 
+                        minValue={"0"} 
+                        maxValue={"1"} 
+                        step={0.1}
+                    />
 
                     <hr className="border-gray-500"/>
 
@@ -48,7 +56,7 @@ export function SideBar() {
                             <div>{apiUsageCount}/100</div>
                         </div>
                         <div className=" bg-black rounded-full">
-                            <div className="w-full bg-blue-600 rounded-full h-4"
+                            <div className="w-full bg-sky-600 rounded-full h-4"
                                 style={{width: `${apiUsageCount * 100 / 100}%`}}
                             ></div>
                         </div>
