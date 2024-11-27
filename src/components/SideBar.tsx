@@ -18,7 +18,7 @@ export function SideBar() {
 
     return (
         <div className={`bg-gray-800 flex flex-col p-2
-            transition-all ${collapse ? "w-[48px]" : "w-1/6"}
+            transition-all duration-200 ${collapse ? "w-[48px]" : "w-1/5"}
         `}>
             <div className="flex flex-row justify-between">
                 <FiSidebar 
@@ -64,7 +64,7 @@ export function SideBar() {
 
                     <hr className="border-gray-500"/>
 
-                    <div className="flex flex-col gap-1 h-full my-1">
+                    <div className="flex flex-col gap-1 h-full my-1 overflow-hidden">
                         <div className="font-bold">How To Use</div>
                         <p>1. Select &quot;Source Language&quot;, &quot;Destination Language&quot;, &quot;Writing Style&quot;</p>
                         <p>2. Write prompt template</p>
