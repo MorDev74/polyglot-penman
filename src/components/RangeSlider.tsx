@@ -9,10 +9,9 @@ interface RangeSliderProps {
     step: number;
 }
 
-// eslint-disable-next-line react/display-name
 export function RangeSlider(props: RangeSliderProps) {
     const { storageKey,initValue, minValue, maxValue, step } = props;
-    const [sliderValue, setSliderValue] = useState(initValue);
+    const [ sliderValue, setSliderValue ] = useState(initValue);
 
     useEffect(() => {
         const storageValue = localStorage.getItem(storageKey) as string;
@@ -21,7 +20,7 @@ export function RangeSlider(props: RangeSliderProps) {
         } else {
             localStorage.setItem(storageKey, minValue);
         }
-    },[])
+    },[storageKey,minValue])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setSliderValue(e.target.value);
