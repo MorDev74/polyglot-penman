@@ -1,9 +1,8 @@
 "use client"
-import { useState } from "react";
+
+import React, { useState } from "react";
 import { defaultPrompt, promptTooltip } from "@/utils/config";
-import { generate } from "@/app/actions";
-import { readStreamableValue } from "ai/rsc";
-import { useRouter } from "next/navigation";
+import { useCompletion } from "ai/react";
 
 function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   :{srcLang:string, destLang:string, writingStyle:string, promptTemplate:string}) 
@@ -11,7 +10,7 @@ function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   const prompt:string = promptTemplate
     .replace(/{source language}/g, srcLang)
     .replace(/{destination language}/g, destLang)
-    .replace(/{}/g, writingStyle)
+    .replace(/{writing style}/g, writingStyle)
 
   let promptMessage = "";
   if (srcLang === destLang) {
@@ -35,15 +34,33 @@ interface ErrorProps {
 }
 
 export default function Home() {
-  const [generation, setGeneration] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({});
-  const [pending, setPending] = useState(false);
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // TODO: add select llm menu
+  let modelName="qwen/qwen-2-7b-instruct:free";
+  modelName="microsoft/phi-3-medium-128k-instruct:free";
+  modelName="google/learnlm-1.5-pro-experimental:free";
+  // modelName="mistralai/mistral-7b-instruct:free";
+
+  const { completion, complete } = useCompletion({
+    api: "/api/openrouter/completion",
+    onResponse: (response: Response) => {
+      console.log('Received response from server:', response)
+    },
+    onFinish: (prompt: string, completion: string) => {
+      void prompt;
+      void completion;
+      setIsLoading(false);
+      console.log("setIsLoading : false");
+    },
+    onError: (error: Error) => {
+      console.error('An error occurred:', error)
+    },
+  });
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setGeneration("");
-    setPending(true);
     const formData = new FormData(e.target as HTMLFormElement);
 
     try {
@@ -57,32 +74,28 @@ export default function Home() {
       const { prompt, promptMessage } = generatePrompt({srcLang, destLang, writingStyle, promptTemplate});
       if (promptMessage) {
         setErrorMessage({ promptTemplate: promptMessage });
-        setPending(false);
         return;
       }
       if (!srcEssay) {
         setErrorMessage({ srcEssay: "Please enter an essay to translate." });
-        setPending(false);
         return;
       }
 
-      const { output,message } = await generate(prompt,srcEssay,temperature);
-      if (output) {
-        for await (const chunk of readStreamableValue(output)) {
-          setGeneration(`${chunk}`);
+      setIsLoading(true);
+      console.log("setIsLoading : true");
+      await complete(srcEssay,{
+        body: {
+          system: prompt,
+          modelName: modelName,
+          temperature: temperature,
         }
-      }
-      if (message) {
-        setErrorMessage({ generate: message });
-      }
+      });
 
     } catch(error) {
       void error;
       setErrorMessage({ generate: "Error generating content. Please try again later." });
     }
 
-    router.refresh();
-    setPending(false);
   } // end onSubmit
 
   const labelStyle = "rounded-md py-1 px-3 text-white bg-black w-1/3"
@@ -119,21 +132,22 @@ export default function Home() {
 
         <button 
           type="submit"
-          className={`bg-sky-800 text-white font-bold p-2 rounded-full ${pending? "": "hover:bg-sky-600"}`}
-          disabled={pending}
+          className={`bg-sky-800 text-white font-bold p-2 rounded-full ${isLoading? "": "hover:bg-sky-600"}`}
+          disabled={isLoading}
         >Generate</button>
 
         <div className="flex-1 flex flex-col">
           <label className={labelStyle} >Destination Language Essay</label>
           <textarea
             name="gen-essay"
-            value={generation}
+            value={completion}
             placeholder="Generated essay"
             className={textareaStyle}
             readOnly
           />
           {errorMessage?.generate && <div className="text-lg text-red-600">{errorMessage?.generate}</div>}
         </div>
+
       </form>
 
     </div>

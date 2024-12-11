@@ -7,13 +7,9 @@ import { srcLangs,destLangs,writingStyles } from "@/utils/config";
 import { FiSidebar } from "react-icons/fi";
 import { RangeSlider } from "./RangeSlider";
 export function SideBar() {
-    const [apiUsageCount,setApiUsageCount] = useState(-1);
     const [collapse, setCollapse] = useState(false);
 
     useEffect(() => {
-        fetch("/api/api-usage-data",{method:"GET"})
-            .then((res) => res.json())
-            .then((data) => setApiUsageCount(data.apiUsageCount))
     },[])
 
     return (
@@ -47,20 +43,6 @@ export function SideBar() {
                         maxValue={"1"} 
                         step={0.1}
                     />
-
-                    <hr className="border-gray-500"/>
-
-                    <div className="flex flex-col my-2">
-                        <div className="flex flex-row justify-between">
-                            <div className="font-bold">API Usage Count</div>
-                            <div>{apiUsageCount}/100</div>
-                        </div>
-                        <div className=" bg-black rounded-full">
-                            <div className="w-full bg-sky-600 rounded-full h-4"
-                                style={{width: `${apiUsageCount * 100 / 100}%`}}
-                            ></div>
-                        </div>
-                    </div>
 
                     <hr className="border-gray-500"/>
 
