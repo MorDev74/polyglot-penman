@@ -25,11 +25,11 @@ export async function POST(req: Request): Promise<Response> {
         return new Response("Missing required parameters", { status: 400 });
     }
 
-    const aiClient = await getOpenRouterClient();
+    const llmClient = await getOpenRouterClient();
     const temperatureFloat = parseFloat(temperature);
 
     const result = await streamText({
-        model: aiClient(modelName),
+        model: llmClient(modelName),
         system:system,
         prompt: prompt,
         temperature: temperatureFloat,
