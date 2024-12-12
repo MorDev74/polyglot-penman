@@ -1,35 +1,39 @@
 import { streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
 export const maxDuration = 30;
 // export const runtime = "edge";
 
-const baseUrl = process.env["OPENROUTER_API_URL"];
 const apiKey = process.env["OPENROUTER_API_KEY_WRITER"];
+
+// ref : https://openrouter.ai/docs/frameworks
+async function getOpenRouterClient() {
+    const openRouterClient = createOpenRouter({
+        apiKey: apiKey,
+    });
+    return openRouterClient;
+}
 
 export async function POST(req: Request): Promise<Response> {
     const {prompt, modelName, system, temperature} = await req.json();
-    const temperatureFloat = parseFloat(temperature);
 
     if ( prompt === undefined
         || modelName  === undefined
         || system  === undefined
-        || temperatureFloat === undefined
+        || temperature === undefined
     ) {
         return new Response("Missing required parameters", { status: 400 });
     }
 
-    const openaiClient = createOpenAI({ 
-        apiKey: apiKey, 
-        baseUrl: baseUrl,
-    }); 
+    const aiClient = await getOpenRouterClient();
+    const temperatureFloat = parseFloat(temperature);
 
-    const result = streamText({
-        model: openaiClient(modelName),
+    const result = await streamText({
+        model: aiClient(modelName),
         system:system,
         prompt: prompt,
         temperature: temperatureFloat,
     });
 
-    return (await result).toDataStreamResponse();
+    return result.toDataStreamResponse();
 }

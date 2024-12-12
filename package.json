@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/google": "^0.0.55",
     "@ai-sdk/openai": "^0.0.72",
+    "@openrouter/ai-sdk-provider": "^0.0.6",
     "@prisma/client": "^5.22.0",
     "@vercel/postgres": "^0.10.0",
     "ai": "^3.4.33",
