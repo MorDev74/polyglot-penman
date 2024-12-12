@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { defaultPrompt, promptTooltip } from "@/utils/config";
 import { useCompletion } from "ai/react";
+import { useRouter } from "next/navigation";
 
 function generatePrompt({srcLang, destLang, writingStyle, promptTemplate}
   :{srcLang:string, destLang:string, writingStyle:string, promptTemplate:string}) 
@@ -37,11 +38,13 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const router = useRouter();
+
   // TODO: add select llm menu
   let modelName="qwen/qwen-2-7b-instruct:free";
   // modelName="microsoft/phi-3-medium-128k-instruct:free";
-  // modelName="google/learnlm-1.5-pro-experimental:free";
-  modelName="mistralai/mistral-7b-instruct:free";
+  modelName="google/learnlm-1.5-pro-experimental:free";
+  // modelName="mistralai/mistral-7b-instruct:free";
 
   const { completion, complete } = useCompletion({
     api: "/api/openrouter/completion",
@@ -96,6 +99,7 @@ export default function Home() {
       setErrorMessage({ generate: "Error generating content. Please try again later." });
     }
 
+    router.refresh();
   } // end onSubmit
 
   const labelStyle = "rounded-md py-1 px-3 text-white bg-black w-1/3"
