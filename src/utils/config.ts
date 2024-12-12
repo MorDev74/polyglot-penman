@@ -37,7 +37,7 @@ export const writingStyles = [
     "Technical"
 ]
 
-export const defaultPrompt = `Translate following essay from {source language} to {destination language} with {writing style}.
+export const defaultPrompt = `Translate the given essay from {source language} to {destination language}, and employ a {writing style} writing style.
 essay:
 `;
 
