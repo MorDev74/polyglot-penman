@@ -39,14 +39,14 @@ export default function Home() {
 
   // TODO: add select llm menu
   let modelName="qwen/qwen-2-7b-instruct:free";
-  modelName="microsoft/phi-3-medium-128k-instruct:free";
-  modelName="google/learnlm-1.5-pro-experimental:free";
-  // modelName="mistralai/mistral-7b-instruct:free";
+  // modelName="microsoft/phi-3-medium-128k-instruct:free";
+  // modelName="google/learnlm-1.5-pro-experimental:free";
+  modelName="mistralai/mistral-7b-instruct:free";
 
   const { completion, complete } = useCompletion({
     api: "/api/openrouter/completion",
     onResponse: (response: Response) => {
-      console.log('Received response from server:', response)
+      void response;
     },
     onFinish: (prompt: string, completion: string) => {
       void prompt;
