@@ -37,6 +37,13 @@ export const writingStyles = [
     "Technical"
 ]
 
+export const llmNames = [
+  "qwen/qwen-2-7b-instruct:free",
+  "microsoft/phi-3-medium-128k-instruct:free",
+  "google/learnlm-1.5-pro-experimental:free",
+  "mistralai/mistral-7b-instruct:free",
+]
+
 export const defaultPrompt = `Translate the given essay from {source language} to {destination language}, and employ a {writing style} writing style.
 essay:
 `;

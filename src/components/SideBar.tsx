@@ -3,7 +3,7 @@
 import { useState,useEffect } from "react";
 import Image from "next/image";
 import { ComboMenu } from "@/components/ComboMenu";
-import { srcLangs,destLangs,writingStyles } from "@/utils/config";
+import { srcLangs,destLangs,writingStyles,llmNames } from "@/utils/config";
 import { FiSidebar } from "react-icons/fi";
 import { RangeSlider } from "./RangeSlider";
 export function SideBar() {
@@ -36,6 +36,7 @@ export function SideBar() {
                     <ComboMenu name={"Source Language"} storageKey={"srcLang"} list={srcLangs}/>
                     <ComboMenu name={"Destination Language"} storageKey={"destLang"} list={destLangs}/>
                     <ComboMenu name={"Writing Style"} storageKey={"writingStyle"} list={writingStyles}/>
+                    <ComboMenu name={"LLMs"} storageKey={"llmName"} list={llmNames}/>
                     <RangeSlider 
                         storageKey={"temperature"}
                         initValue={"0.5"} 

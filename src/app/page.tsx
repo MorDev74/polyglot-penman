@@ -39,12 +39,6 @@ export default function Home() {
 
   const router = useRouter();
 
-  // TODO: add select llm menu
-  let modelName="qwen/qwen-2-7b-instruct:free";
-  // modelName="microsoft/phi-3-medium-128k-instruct:free";
-  // modelName="google/learnlm-1.5-pro-experimental:free";
-  modelName="mistralai/mistral-7b-instruct:free";
-
   const { completion, complete, isLoading } = useCompletion({
     api: "/api/openrouter/completion",
     onResponse: (response: Response) => {
@@ -67,6 +61,7 @@ export default function Home() {
       const srcLang = localStorage.getItem("srcLang") as string;
       const destLang = localStorage.getItem("destLang") as string;
       const writingStyle = localStorage.getItem("writingStyle") as string;
+      const llmName = localStorage.getItem("llmName") as string;
       const promptTemplate = formData.get("promptTemplate") as string;
       const srcEssay = formData.get("src-essay") as string;
       const temperature = parseInt(formData.get("temperature") as string ?? "0");
@@ -84,7 +79,7 @@ export default function Home() {
       await complete(srcEssay,{
         body: {
           system: prompt,
-          modelName: modelName,
+          modelName: llmName,
           temperature: temperature,
         }
       });
