@@ -36,7 +36,6 @@ interface ErrorProps {
 
 export default function Home() {
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -46,7 +45,7 @@ export default function Home() {
   // modelName="google/learnlm-1.5-pro-experimental:free";
   modelName="mistralai/mistral-7b-instruct:free";
 
-  const { completion, complete } = useCompletion({
+  const { completion, complete, isLoading } = useCompletion({
     api: "/api/openrouter/completion",
     onResponse: (response: Response) => {
       void response;
@@ -54,8 +53,6 @@ export default function Home() {
     onFinish: (prompt: string, completion: string) => {
       void prompt;
       void completion;
-      setIsLoading(false);
-      console.log("setIsLoading : false");
     },
     onError: (error: Error) => {
       console.error('An error occurred:', error)
@@ -84,8 +81,6 @@ export default function Home() {
         return;
       }
 
-      setIsLoading(true);
-      console.log("setIsLoading : true");
       await complete(srcEssay,{
         body: {
           system: prompt,
@@ -120,6 +115,7 @@ export default function Home() {
             title={promptTooltip}
             placeholder="Enter your prompt here"
             className={textareaStyle}
+            disabled={isLoading}
           />
           {errorMessage?.promptTemplate && <p className="text-lg text-red-500">{errorMessage?.promptTemplate}</p>}
         </div>
@@ -130,6 +126,7 @@ export default function Home() {
             name="src-essay"
             placeholder="Enter your source essay here"
             className={textareaStyle}
+            disabled={isLoading}
           />
           {errorMessage?.sourceLanguage && <div className="text-lg text-red-600">{errorMessage?.sourceLanguage}</div>}
         </div>
