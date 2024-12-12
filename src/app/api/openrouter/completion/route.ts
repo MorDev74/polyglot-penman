@@ -7,7 +7,7 @@ export const maxDuration = 30;
 const baseUrl = process.env["OPENROUTER_API_URL"];
 const apiKey = process.env["OPENROUTER_API_KEY_WRITER"];
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     const {prompt, modelName, system, temperature} = await req.json();
     const temperatureFloat = parseFloat(temperature);
 

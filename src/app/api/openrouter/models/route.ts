@@ -3,7 +3,7 @@ export const maxDuration = 30;
 
 const baseUrl = process.env["OPENROUTER_API_URL"];
 
-export async function GET() {
+export async function GET(): Promise<Response> {
 
     const response = await fetch(`${baseUrl}/models`);
     if (response.status === 200) {
@@ -13,4 +13,5 @@ export async function GET() {
         }
     }
 
+    return new Response("OK", {status:200});
 }
