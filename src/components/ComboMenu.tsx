@@ -28,6 +28,8 @@ export function ComboMenu({name,storageKey,list}
 
             <select 
                 value={selectValue || ""}
+                id={name}
+                name={name}
                 onChange={onSelectChange}
                 className="rounded-md bg-slate-900 p-2"
             >
