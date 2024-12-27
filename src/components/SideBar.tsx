@@ -4,8 +4,9 @@ import { useState,useEffect } from "react";
 import Image from "next/image";
 import { ComboMenu } from "@/components/ComboMenu";
 import { srcLangs,destLangs,writingStyles,llmNames } from "@/utils/config";
-import { FiSidebar } from "react-icons/fi";
+import { SidebarIcon } from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
+
 export function SideBar() {
     const [collapse, setCollapse] = useState(false);
 
@@ -17,8 +18,8 @@ export function SideBar() {
             transition-all duration-200 ${collapse ? "w-[48px]" : "w-1/5"}
         `}>
             <div className="flex flex-row justify-between">
-                <FiSidebar 
-                    size={"36"} 
+                <SidebarIcon 
+                    size={36}
                     onClick={() => {setCollapse(!collapse)}}
                     className="cursor-pointer"
                 />
